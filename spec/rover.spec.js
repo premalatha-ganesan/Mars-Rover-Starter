@@ -14,8 +14,8 @@ describe("Rover class", function() {
     const actualRover = new Rover(expectedPosition);
 
     expect(actualRover.position).toBe(expectedPosition);
-    expect(actualRover.mode).toBe('NORMAL');      // Default rover mode must be NORMAL
-    expect(actualRover.generatorWatts).toBe(110); // Default generatorWatts must be 110
+    expect(actualRover.mode).toEqual('NORMAL');      // Default rover mode must be NORMAL
+    expect(actualRover.generatorWatts).toEqual(110); // Default generatorWatts must be 110
   });
 
   it("response returned by receiveMessage contains the name of the message", function() {
@@ -24,7 +24,7 @@ describe("Rover class", function() {
     const testRover = new Rover(1);
     const actualResult = testRover.receiveMessage(testMessage);
 
-    expect(actualResult.message).toBe(expectedMessage);
+    expect(actualResult.message).toEqual(expectedMessage);
   });
 
   it("response returned by receiveMessage includes two results if two commands are sent in the message", function() {
@@ -34,8 +34,8 @@ describe("Rover class", function() {
     const testRover = new Rover(1);
 
     const actualResult = testRover.receiveMessage(inputMessage);
-    expect(actualResult.message).toBe(testMessage);
-    expect(actualResult.results.length).toBe(inputCommands.length);
+    expect(actualResult.message).toEqual(testMessage);
+    expect(actualResult.results.length).toEqual(inputCommands.length);
   });
 
   it("responds correctly to the status check command", function() {
@@ -47,9 +47,10 @@ describe("Rover class", function() {
     const actualResult = testRover.receiveMessage(inputMessage);
 
     expect(actualResult.message).toBe(testMessage);
-    expect(actualResult.results[0].roverStatus.mode).toBe("NORMAL");
-    expect(actualResult.results[0].roverStatus.generatorWatts).toBe(110);
-    expect(actualResult.results[0].roverStatus.position).toBe(initialPosition);
+    expect(actualResult.results[0].completed).toBeTruthy();
+    expect(actualResult.results[0].roverStatus.mode).toEqual("NORMAL");
+    expect(actualResult.results[0].roverStatus.generatorWatts).toEqual(110);
+    expect(actualResult.results[0].roverStatus.position).toEqual(initialPosition);
   });
 
   it("responds correctly to the mode change command", function() {
@@ -62,16 +63,16 @@ describe("Rover class", function() {
     const lowPowerMessage = new Message(testMessage, lowPowerCommand);
     const lowPowerResult = testRover.receiveMessage(lowPowerMessage);
 
-    expect(lowPowerResult.results[0].completed).toBe(true);
-    expect(testRover.mode).toBe("LOW_POWER");
+    expect(lowPowerResult.results[0].completed).toBeTruthy();
+    expect(testRover.mode).toEqual("LOW_POWER");
 
     //Checking whether change back to Normal mode is successful
     const normalValueCommand = [new Command('MODE_CHANGE', 'NORMAL')];
     const normalValueMessage = new Message(testMessage, normalValueCommand);
     const normalValueResult = testRover.receiveMessage(normalValueMessage);
     
-    expect(normalValueResult.results[0].completed).toBe(true);
-    expect(testRover.mode).toBe("NORMAL");
+    expect(normalValueResult.results[0].completed).toBeTruthy();
+    expect(testRover.mode).toEqual("NORMAL");
   });
 
   it("responds with a false completed value when attempting to move in LOW_POWER mode", function() {
@@ -83,8 +84,8 @@ describe("Rover class", function() {
     const lowPowerCommand = [new Command('MODE_CHANGE', 'LOW_POWER')];
     const lowPowerMessage = new Message(testMessage, lowPowerCommand);
     const lowPowerResult = testRover.receiveMessage(lowPowerMessage);
-    expect(testRover.mode).toBe("LOW_POWER");
-    expect(lowPowerResult.results[0].completed).toBe(true);
+    expect(testRover.mode).toEqual("LOW_POWER");
+    expect(lowPowerResult.results[0].completed).toBeTruthy();
 
     // Attempting to move the rover during low power mode
     const moveCommand = [new Command("MOVE", 20)];
@@ -92,8 +93,8 @@ describe("Rover class", function() {
     const moveResult = testRover.receiveMessage(moveMessage);
 
     // Rover move to fail and return completed as false
-    expect(moveResult.results[0].completed).toBe(false);
-    expect(testRover.position).toBe(initialPosition);
+    expect(moveResult.results[0].completed).toBeFalsy();
+    expect(testRover.position).toEqual(initialPosition);
   });
 
   it("responds with the position for the move command", function() {
@@ -107,7 +108,7 @@ describe("Rover class", function() {
     const moveResult = testRover.receiveMessage(moveMessage);
 
     // Move should be successful as rover is in normal mode
-    expect(moveResult.results[0].completed).toBe(true);
-    expect(testRover.position).toBe(1000);
+    expect(moveResult.results[0].completed).toBeTruthy();
+    expect(testRover.position).toEqual(1000);
   });
 });
