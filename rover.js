@@ -49,9 +49,9 @@ class Rover {
       return {
          completed : true
       };
-     }
+   }
 
-     executeMoveCommand(value) {
+   executeMoveCommand(value) {
       let completedStatus = false;
       if (this.mode === "NORMAL") {
          this.position = value;
@@ -60,9 +60,7 @@ class Rover {
       return {
          completed : completedStatus
       };
-     }
-
-
+   }
 }
 
 module.exports = Rover;
